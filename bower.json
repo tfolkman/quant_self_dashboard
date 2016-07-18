@@ -1,10 +1,10 @@
 {
-  "name": "ultimate-flask-front-end",
-  "homepage": "https://github.com/realpython/ultimate-flask-front-end",
+  "name": "quant-self-dashboard",
+  "homepage": "learningwithdata.com",
   "authors": [
-    "Michael Herman michael@realpython.com"
+    "Tyler Folkman"
   ],
-  "description": "",
+  "description": "Dashboard for my data",
   "main": "",
   "license": "MIT",
   "ignore": [
@@ -16,6 +16,7 @@
   ],
   "dependencies": {
     "bootstrap": "^3.3.6",
-    "react": "^15.1.0"
+    "react": "^15.1.0",
+    "Chart.js": "^2.1.6"
   }
 }

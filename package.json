@@ -1,26 +1,24 @@
 {
-  "name": "ultimate-flask-front-end",
+  "name": "dashboard",
   "version": "1.0.0",
-  "description": "",
+  "description": "dashboard app",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/realpython/ultimate-flask-front-end.git"
+    "url": "none"
   },
-  "author": "",
+  "author": "tyler folkman",
   "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/realpython/ultimate-flask-front-end/issues"
-  },
-  "homepage": "https://github.com/realpython/ultimate-flask-front-end#readme",
   "devDependencies": {
+    "babel-preset-react": "^6.11.1",
+    "babelify": "^7.3.0",
     "bower": "^1.7.9",
-    "del": "^2.2.0",
+    "del": "^2.2.1",
     "gulp": "^3.9.1",
-    "gulp-browser": "^2.1.4",
+    "gulp-browser": "^2.1.9",
     "gulp-size": "^2.1.0",
     "reactify": "^1.1.1"
   }

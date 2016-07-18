@@ -44,7 +44,7 @@ var countries = [
   {"name": "Malaysia"}, {"name": "Argentina"}, {"name": "Uganda"}, {"name": "Chile"},
   {"name": "Aruba"}, {"name": "Japan"}, {"name": "Trinidad and Tobago"}, {"name": "Italy"},
   {"name": "Cambodia"}, {"name": "Iceland"}, {"name": "Dominican Republic"}, {"name": "Turkey"},
-  {"name": "Spain"}, {"name": "Poland"}, {"name": "Haiti"}
+  {"name": "Spain"}, {"name": "Poland"}, {"name": "Haiti"}, { "name": "United States"}
 ];
 
 ReactDOM.render(
