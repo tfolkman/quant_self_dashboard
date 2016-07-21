@@ -16,10 +16,13 @@
     "babel-preset-react": "^6.11.1",
     "babelify": "^7.3.0",
     "bower": "^1.7.9",
+    "chart.js": "1.1.1",
     "del": "^2.2.1",
     "gulp": "^3.9.1",
     "gulp-browser": "^2.1.9",
     "gulp-size": "^2.1.0",
-    "reactify": "^1.1.1"
+    "react": "^15.2.1",
+    "react-chartjs": "^0.7.3",
+    "react-dom": "^15.2.1"
   }
 }

@@ -1,53 +1,31 @@
-var DynamicSearch = React.createClass({
+var React = require('react');
+var ReactDOM = require('react-dom');
+var LineChart = require("react-chartjs").Line;
 
-  // sets initial state
-  getInitialState: function(){
-    return { searchString: '' };
-  },
-
-  // sets state, triggers render method
-  handleChange: function(event){
-    // grab value form input box
-    this.setState({searchString:event.target.value});
-    console.log("scope updated!");
-  },
-
+var MyComponent = React.createClass({
   render: function() {
 
-    var countries = this.props.items;
-    var searchString = this.state.searchString.trim().toLowerCase();
+    var chartData = {
+      labels: ["January", "February", "March", "April", "May", "June", "July"],
+      datasets: [
+          {
+              label: "My First dataset",
+              fillColor: "rgba(220,220,220,0.2)",
+              strokeColor: "rgba(220,220,220,1)",
+              pointColor: "rgba(220,220,220,1)",
+              pointStrokeColor: "#fff",
+              pointHighlightFill: "#fff",
+              pointHighlightStroke: "rgba(220,220,220,1)",
+              data: [1, 2, 3, 4, 5, 6, 7]
+          }
+      ]
+    };
 
-    // filter countries list by value from input box
-    if(searchString.length > 0){
-      countries = countries.filter(function(country){
-        return country.name.toLowerCase().match( searchString );
-      });
-    }
-
-    return (
-      <div>
-        <input type="text" value={this.state.searchString} onChange={this.handleChange} placeholder="Search!" />
-        <ul>
-          { countries.map(function(country){ return <li>{country.name} </li> }) }
-        </ul>
-      </div>
-    )
+    return <LineChart data={chartData} width="600" height="250"/>
   }
-
 });
 
-// list of countries, defined with JavaScript object literals
-var countries = [
-  {"name": "Sweden"}, {"name": "China"}, {"name": "Peru"}, {"name": "Czech Republic"},
-  {"name": "Bolivia"}, {"name": "Latvia"}, {"name": "Samoa"}, {"name": "Armenia"},
-  {"name": "Greenland"}, {"name": "Cuba"}, {"name": "Western Sahara"}, {"name": "Ethiopia"},
-  {"name": "Malaysia"}, {"name": "Argentina"}, {"name": "Uganda"}, {"name": "Chile"},
-  {"name": "Aruba"}, {"name": "Japan"}, {"name": "Trinidad and Tobago"}, {"name": "Italy"},
-  {"name": "Cambodia"}, {"name": "Iceland"}, {"name": "Dominican Republic"}, {"name": "Turkey"},
-  {"name": "Spain"}, {"name": "Poland"}, {"name": "Haiti"}, { "name": "United States"}
-];
-
 ReactDOM.render(
-  <DynamicSearch items={ countries } />,
+  <MyComponent />,
   document.getElementById('main')
 );
