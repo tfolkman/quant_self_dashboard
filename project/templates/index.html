@@ -1,20 +1,31 @@
 <!DOCTYPE html>
 <html>
-  <head lang="en">
+
+<head lang="en">
     <meta charset="UTF-8">
     <title>Flask React</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- styles -->
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='bower_components/bootstrap/dist/css/bootstrap.min.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
-  </head>
-  <body>
+</head>
+
+<body>
     <div class="container">
-      <h1>Flask React</h1>
-      <br>
-      <div id="main"></div>
+        <div class="row">
+            <div class="col-md-4">
+                <div id="topLeftChart"></div>
+            </div>
+            <div class="col-md-4">
+                <div id="topMidChart"></div>
+            </div>
+            <div class="col-md-4">
+                <div id="topRightChart"></div>
+            </div>
+        </div>
     </div>
     <!-- scripts -->
     <script src="{{ url_for('static', filename='scripts/js/main.js') }}"></script>
-  </body>
+</body>
+
 </html>
