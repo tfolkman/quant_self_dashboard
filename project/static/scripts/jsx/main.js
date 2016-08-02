@@ -43,25 +43,26 @@ var Dashboard = React.createClass({
 var TopLeftChart = React.createClass({
 
     getInitialState: function() {
-        return {chartData: [], dataType: [], dataColumn: []};
+        return {chartData: [], dataColumn: [], currentSelect: []};
     },
 
     componentDidMount: function() {
-        var dataType = "ALL";
         var dataColumn = "min_league"; 
-        this.loadChartData(dataType, dataColumn);
+        this.loadChartData(dataColumn);
     },
 
-    loadChartData: function(dataType, dataColumn) {
+    loadChartData: function(dataColumn) {
         $.ajax({
             url: "/get_line_chart_data/",
             type: 'POST',
-            data: JSON.stringify({'dataType': dataType, 'dataColumn': dataColumn}),
+            data: JSON.stringify({'dataColumn': dataColumn}),
             contentType: 'application/json;charset=UTF-8',
             dataType: 'json',
             cache: false,
             success: function(data) {
-                this.setState({chartData: data, dataType: dataType, dataColumn: dataColumn});
+                var currentSelect = {value: dataColumn, label: dataColumn}
+                this.setState({chartData: data, dataColumn: dataColumn,
+                  currentSelect: currentSelect});
             }.bind(this),
             error: function(xhr, status, err) {
                 console.error("/get_line_chart_data/", status, err.toString());
@@ -77,7 +78,7 @@ var TopLeftChart = React.createClass({
     return (
       <div className="col-md-4">
         <LineChart data={this.state.chartData} redraw width="350" height="300"/>
-        <Select name="variable-select" value={"Testing"} options={options}/>
+        <Select name="variable-select" value={this.state.currentSelect} options={options} onChange={this.state.loadChartData}/>
       </div>
     );
   }

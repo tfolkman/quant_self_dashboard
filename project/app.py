@@ -38,7 +38,6 @@ def get_variables():
 
 @app.route('/get_line_chart_data/', methods=['POST'])
 def get_line_chart_data():
-	data_type = request.json['dataType']
 	data_column = request.json['dataColumn']
 	datasets_dict = BASE_CHART_OPTIONS
 	datasets_dict['data'] = df[data_column].values.tolist()
