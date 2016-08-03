@@ -26455,26 +26455,25 @@ var TopLeftChart = React.createClass({
 
 
     getInitialState: function () {
-        return { chartData: [], dataColumn: [], currentSelect: [] };
+        return { chartData: [], currentSelect: [] };
     },
 
     componentDidMount: function () {
         var dataColumn = "min_league";
-        this.loadChartData(dataColumn);
+        var currentSelect = { value: dataColumn, label: dataColumn };
+        this.loadChartData(currentSelect);
     },
 
-    loadChartData: function (dataColumn) {
+    loadChartData: function (currentSelect) {
         $.ajax({
             url: "/get_line_chart_data/",
             type: 'POST',
-            data: JSON.stringify({ 'dataColumn': dataColumn }),
+            data: JSON.stringify({ 'dataColumn': currentSelect.value }),
             contentType: 'application/json;charset=UTF-8',
             dataType: 'json',
             cache: false,
             success: function (data) {
-                var currentSelect = { value: dataColumn, label: dataColumn };
-                this.setState({ chartData: data, dataColumn: dataColumn,
-                    currentSelect: currentSelect });
+                this.setState({ chartData: data, currentSelect: currentSelect });
             }.bind(this),
             error: function (xhr, status, err) {
                 console.error("/get_line_chart_data/", status, err.toString());
@@ -26489,9 +26488,9 @@ var TopLeftChart = React.createClass({
 
         return React.createElement(
             'div',
-            { className: 'col-md-4' },
-            React.createElement(LineChart, { data: this.state.chartData, redraw: true, width: '350', height: '300' }),
-            React.createElement(Select, { name: 'variable-select', value: this.state.currentSelect, options: options, onChange: this.state.loadChartData })
+            { className: 'col-xs-12 col-md-4' },
+            React.createElement(LineChart, { data: this.state.chartData, redraw: true }),
+            React.createElement(Select, { name: 'variable-select', value: this.state.currentSelect, options: options, onChange: this.loadChartData })
         );
     }
 });
