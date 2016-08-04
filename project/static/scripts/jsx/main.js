@@ -32,8 +32,13 @@ var Dashboard = React.createClass({
 
     render: function() {
       return (
+        <div>
         <div className="row">
             <TopLeftChart variables={this.state.min_vars}/>
+        </div>
+        <div className="row">
+            <TopMidChart variables={this.state.flag_vars}/>
+        </div>
         </div>
       );
     }
@@ -84,43 +89,61 @@ var TopLeftChart = React.createClass({
 });
 
 var TopMidChart = React.createClass({
+
+    getInitialState: function() {
+        return {tableData: [], currentSelect: []};
+    },
+
+    componentDidMount: function() {
+        var dataColumn = "flag_s"; 
+        var currentSelect = {value: dataColumn, label: dataColumn}
+        this.loadTableData(currentSelect);
+    },
+
+    loadTableData: function(currentSelect) {
+        $.ajax({
+            url: "/get_table_data/",
+            type: 'POST',
+            data: JSON.stringify({'dataColumn': currentSelect.value}),
+            contentType: 'application/json;charset=UTF-8',
+            dataType: 'json',
+            cache: false,
+            success: function(data) {
+                this.setState({tableData: data, currentSelect: currentSelect});
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.error("/get_table_data/", status, err.toString());
+            }.bind(this)
+        });
+    },
+
   render: function() {
+    var options = this.props.variables.map( function(variable) {
+      return {value: variable, label: variable};
+    });
 
-    var chartData = {
-      labels: ["January", "February", "March", "April", "May", "June", "July"],
-      datasets: [
-          {
-              label: "My First dataset",
-              fillColor: "rgba(220,220,220,0.2)",
-              strokeColor: "rgba(220,220,220,1)",
-              pointColor: "rgba(220,220,220,1)",
-              pointStrokeColor: "#fff",
-              pointHighlightFill: "#fff",
-              pointHighlightStroke: "rgba(220,220,220,1)",
-              data: [3, 4, 3, 6, 5, 6, 7]
-          }
-      ]
-    };
-
-    return <LineChart data={chartData} width="350" height="300"/>
+    return (
+      <div className="col-xs-12 col-md-4">
+        <Table dataDict={this.state.tableData}/>
+        <Select name="variable-select" value={this.state.currentSelect} options={options} onChange={this.loadTableData}/>
+      </div>
+    );
   }
 });
 
-var TopRightChart = React.createClass({
+var Table = React.createClass({
+
   render: function() {
-
-    var chartData = {
-      labels: ["January", "February", "March", "April", "May", "June", "July"],
-      datasets: [
-          {
-              data: [30, 4, 3, 6, 52, 6, 1]
-          }
-      ]
-    };
-
-    return <LineChart data={chartData} width="350" height="300"/>
+    return (
+      <div>
+      <h3>{this.props.dataDict.name}</h3>
+      <p>Last Happened: {this.props.dataDict.last_happened}</p>
+      <p>Days Since Last Happened: {this.props.dataDict.days_since}</p>
+      </div>
+    );
   }
-});
+})
+
 
 ReactDOM.render(
   <Dashboard/>,

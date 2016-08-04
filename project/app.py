@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request
 from pandas import read_csv
 from json import dumps
+import datetime
 import os
 
 app = Flask(__name__)
@@ -45,6 +46,19 @@ def get_line_chart_data():
 		'labels': df.date.values.tolist(),
 		'datasets': [ datasets_dict ]
 	}
+	return dumps(return_dict)
+
+
+@app.route('/get_table_data/', methods=['POST'])
+def get_table_data():
+	data_column = request.json['dataColumn']
+	last_happened = df[df[data_column] == 1].iloc[-1]['date']
+	last_happened_date = datetime.datetime.strptime(last_happened, "%m/%d/%Y").date()
+	now_date = datetime.datetime.now().date()
+	days_since = (now_date - last_happened_date).days
+	return_dict = {'last_happened': last_happened,
+					'name': data_column.split("_")[1].upper(),
+					'days_since': days_since}
 	return dumps(return_dict)
 
 
