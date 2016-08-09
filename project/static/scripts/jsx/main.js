@@ -81,7 +81,7 @@ var TopLeftChart = React.createClass({
 
     return (
       <div className="col-xs-12 col-md-4">
-        <LineChart data={this.state.chartData} redraw />
+        <LineChart data={this.state.chartData} redraw width="350" height="300"/>
         <Select name="variable-select" value={this.state.currentSelect} options={options} onChange={this.loadChartData}/>
       </div>
     );
@@ -139,6 +139,8 @@ var Table = React.createClass({
       <h3>{this.props.dataDict.name}</h3>
       <p>Last Happened: {this.props.dataDict.last_happened}</p>
       <p>Days Since Last Happened: {this.props.dataDict.days_since}</p>
+      <p>Sum last seven days: {this.props.dataDict.last_seven}</p>
+      <p>Sum last thirty days: {this.props.dataDict.last_thirty}</p>
       </div>
     );
   }

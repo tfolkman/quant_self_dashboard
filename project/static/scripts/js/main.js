@@ -26498,7 +26498,7 @@ var TopLeftChart = React.createClass({
         return React.createElement(
             'div',
             { className: 'col-xs-12 col-md-4' },
-            React.createElement(LineChart, { data: this.state.chartData, redraw: true }),
+            React.createElement(LineChart, { data: this.state.chartData, redraw: true, width: '350', height: '300' }),
             React.createElement(Select, { name: 'variable-select', value: this.state.currentSelect, options: options, onChange: this.loadChartData })
         );
     }
@@ -26573,6 +26573,18 @@ var Table = React.createClass({
                 null,
                 'Days Since Last Happened: ',
                 this.props.dataDict.days_since
+            ),
+            React.createElement(
+                'p',
+                null,
+                'Sum last seven days: ',
+                this.props.dataDict.last_seven
+            ),
+            React.createElement(
+                'p',
+                null,
+                'Sum last thirty days: ',
+                this.props.dataDict.last_thirty
             )
         );
     }
