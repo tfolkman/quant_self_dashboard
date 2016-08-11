@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request
-from pandas import read_csv
+from pandas import read_csv, to_datetime
 from json import dumps
 import numpy as np
 import datetime
@@ -19,7 +19,7 @@ BASE_CHART_OPTIONS = {'fillColor': "rgba(220,220,220,0.2)",
 
 df = read_csv(DATA)
 df = df.fillna(0)
-df['month'] = df.date.str.split("/").str.get(0)
+df.index = to_datetime(df['date'])
 
 columns = df.columns
 min_vars = []
@@ -69,17 +69,26 @@ def get_table_data():
 	return dumps(return_dict)
 
 
-@app.route('/get_monthly_medians', methods=['POST'])
-def get_monthly_medians():
+@app.route('/get_medians/', methods=['POST'])
+def get_medians():
+	print("*********")
 	data_columns = request.json['dataColumns']
-	medians = df[data_columns].groupby('month').sum().median()
+	time_range = request.json['timeRange']
+	print(time_range)
+	print(data_columns)
+	if 'week' in time_range:
+		group_by = "W"
+	else:
+		group_by = "M"
+	medians = df[data_columns].resample(group_by, how='sum').median()
 	medians.sort(ascending=False)
 	datasets_dict = BASE_CHART_OPTIONS
-	datasets_dict['data'] = medians.values.to_list()
+	datasets_dict['data'] = medians.values.tolist()
 	return_dict = {
-		'labels': medians.index.to_list(),
+		'labels': medians.index.tolist(),
 		'datasets': [ datasets_dict ]
 	}
+	print(return_dict)
 	return dumps(return_dict)
 
 

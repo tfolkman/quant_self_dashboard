@@ -26410,6 +26410,7 @@ module.exports = require('./lib/React');
 var React = require('react');
 var ReactDOM = require('react-dom');
 var LineChart = require("react-chartjs").Line;
+var BarChart = require("react-chartjs").Bar;
 var Select = require('react-select');
 
 var Dashboard = React.createClass({
@@ -26447,20 +26448,85 @@ var Dashboard = React.createClass({
             React.createElement(
                 'div',
                 { className: 'row' },
-                React.createElement(TopLeftChart, { variables: this.state.min_vars })
+                React.createElement(MinLineChart, { variables: this.state.min_vars }),
+                React.createElement(MedianBarChart, { variables: this.state.min_vars })
             ),
             React.createElement(
                 'div',
                 { className: 'row' },
-                React.createElement(TopMidChart, { variables: this.state.flag_vars })
+                React.createElement(FlagTable, { variables: this.state.flag_vars }),
+                React.createElement(MedianBarChart, { variables: this.state.flag_vars })
             )
         );
     }
 
 });
 
-var TopLeftChart = React.createClass({
-    displayName: 'TopLeftChart',
+var MedianBarChart = React.createClass({
+    displayName: 'MedianBarChart',
+
+
+    getInitialState: function () {
+        return { chartData: { labels: [] }, currentSelect: [], variables: [] };
+    },
+
+    componentDidMount: function () {
+        var timeRange = "monthly";
+        var currentSelect = { value: timeRange, label: timeRange };
+        this.setState({ currentSelect: currentSelect });
+    },
+
+    componentWillReceiveProps: function (nextProps) {
+        console.log("props");
+        console.log(this.state.currentSelect);
+        console.log(nextProps.variables);
+        this.setState({ variables: nextProps.variables });
+        console.log(this.state.variables);
+        this.loadChartData(this.state.currentSelect, nextProps.variables);
+    },
+
+    loadChartDataSingle: function (currentSelect) {
+        console.log("single");
+        this.loadChartData(currentSelect, this.props.variables);
+    },
+
+    loadChartData: function (currentSelect, variables) {
+        console.log("ajax");
+        console.log(this.state.variables);
+        $.ajax({
+            url: "/get_medians/",
+            type: 'POST',
+            data: JSON.stringify({ 'dataColumns': variables, 'timeRange': currentSelect.value }),
+            contentType: 'application/json;charset=UTF-8',
+            dataType: 'json',
+            cache: false,
+            success: function (data) {
+                this.setState({ chartData: data, currentSelect: currentSelect });
+            }.bind(this),
+            error: function (xhr, status, err) {
+                console.error("/get_medians/", status, err.toString());
+            }.bind(this)
+        });
+    },
+
+    render: function () {
+        var variables = ['monthly', 'weekly'];
+        var options = variables.map(function (variable) {
+            return { value: variable, label: variable };
+        });
+
+        console.log(this.state.chartData);
+        return React.createElement(
+            'div',
+            { className: 'col-xs-12 col-md-4' },
+            React.createElement(BarChart, { data: this.state.chartData, redraw: true, width: '350', height: '300' }),
+            React.createElement(Select, { name: 'flag-median-select', value: this.state.currentSelect, options: options, onChange: this.loadChartDataSingle })
+        );
+    }
+});
+
+var MinLineChart = React.createClass({
+    displayName: 'MinLineChart',
 
 
     getInitialState: function () {
@@ -26504,8 +26570,8 @@ var TopLeftChart = React.createClass({
     }
 });
 
-var TopMidChart = React.createClass({
-    displayName: 'TopMidChart',
+var FlagTable = React.createClass({
+    displayName: 'FlagTable',
 
 
     getInitialState: function () {
