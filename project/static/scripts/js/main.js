@@ -26651,6 +26651,18 @@ var Table = React.createClass({
                 null,
                 'Sum last thirty days: ',
                 this.props.dataDict.last_thirty
+            ),
+            React.createElement(
+                'p',
+                null,
+                'Best Week: ',
+                this.props.dataDict.best_seven
+            ),
+            React.createElement(
+                'p',
+                null,
+                'Best Month: ',
+                this.props.dataDict.best_month
             )
         );
     }

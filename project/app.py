@@ -61,10 +61,14 @@ def get_table_data():
 	days_since = (now_date - last_happened_date).days
 	last_seven = np.sum(df[data_column].values[-min(7, max_days):])
 	last_thirty = np.sum(df[data_column].values[-min(30, max_days):])
+	monthly_best = df[data_column].resample('M', how='sum').max()
+	weekly_best = df[data_column].resample('W', how='sum').max()
 	return_dict = {'last_happened': last_happened,
 					'name': data_column.split("_")[1].upper(),
 					'days_since': days_since,
 					'last_seven': last_seven,
+					'best_seven': weekly_best,
+					'best_month': monthly_best,
 					'last_thirty': last_thirty}
 	return dumps(return_dict)
 

@@ -205,6 +205,8 @@ var Table = React.createClass({
       <p>Days Since Last Happened: {this.props.dataDict.days_since}</p>
       <p>Sum last seven days: {this.props.dataDict.last_seven}</p>
       <p>Sum last thirty days: {this.props.dataDict.last_thirty}</p>
+      <p>Best Week: {this.props.dataDict.best_seven}</p>
+      <p>Best Month: {this.props.dataDict.best_month}</p>
       </div>
     );
   }
