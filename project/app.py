@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request
 from pandas import read_csv, to_datetime
-from json import dumps
+from json import dumps, load
 import numpy as np
 import datetime
 import os
@@ -10,6 +10,7 @@ app = Flask(__name__)
 APP_ROOT = os.path.dirname(os.path.abspath(__file__))
 APP_STATIC = os.path.join(APP_ROOT, 'static')
 DATA = os.path.join(APP_STATIC, 'data/data.csv')
+GOALS = os.path.join(APP_STATIC, 'data/goals.json')
 BASE_CHART_OPTIONS = {'fillColor': "rgba(220,220,220,0.2)",
               'strokeColor': "rgba(220,220,220,1)",
               'pointColor': "rgba(220,220,220,1)",
@@ -34,6 +35,9 @@ variable_dict['min_vars'] = min_vars
 variable_dict['flag_vars'] = flag_vars
 max_days = df.shape[0]
 
+with open(GOALS) as data_file:    
+	goal_dict = load(data_file)
+
 
 @app.route('/get_variables/', methods=['GET'])
 def get_variables():
@@ -46,7 +50,24 @@ def get_line_chart_data():
 	datasets_dict = BASE_CHART_OPTIONS
 	datasets_dict['data'] = df[data_column].values[-min(30, max_days):].tolist()
 	return_dict = {
-		'labels': df.date.values.tolist(),
+		'labels': df.date.values[-min(30, max_days):].tolist(),
+		'datasets': [ datasets_dict ]
+	}
+	return dumps(return_dict)
+
+
+@app.route('/get_goal_data/', methods=['POST'])
+def get_goal_data():
+	data_column = request.json['dataColumn']
+	interval = request.json['interval']
+	interval_df = df[data_column].resample(interval, how='sum')
+	max_value = min(12, interval_df.shape[0])
+	datasets_dict = BASE_CHART_OPTIONS
+	datasets_dict['data'] = interval_df.values[-max_value:].tolist()
+	dates = [x.strftime('%Y-%m-%d') for x in interval_df.index.date]
+	dates = dates[-max_value:]
+	return_dict = {
+		'labels': dates,
 		'datasets': [ datasets_dict ]
 	}
 	return dumps(return_dict)

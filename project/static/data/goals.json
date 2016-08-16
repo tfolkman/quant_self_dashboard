@@ -1,0 +1,4 @@
+{
+  "min_study": {"interval": "weekly", "type": "min", "value": "180"},
+  "min_scriptures": {"interval": "weekly", "type": "min", "value": "70"}
+}
