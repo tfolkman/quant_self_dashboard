@@ -32,15 +32,32 @@ var Dashboard = React.createClass({
     },
 
     render: function() {
+      var allVars = this.state.min_vars.concat(this.state.flag_vars);
       return (
         <div>
         <div className="row">
-            <MinLineChart variables={this.state.min_vars}/>
-            <MedianBarChart variables={this.state.min_vars}/>
-        </div>
-        <div className="row">
-            <FlagTable variables={this.state.flag_vars}/>
-            <MedianBarChart variables={this.state.flag_vars}/>
+            <div className="col-md-4">
+                <GoalSummary variables={allVars}/>
+                <br/>
+            </div>
+            <div className="col-md-8">
+                <div className="row">
+                    <div className="col-md-6">
+                        <MinLineChart variables={this.state.min_vars}/>
+                    </div>
+                    <div className="col-md-6">
+                        <MedianBarChart variables={this.state.min_vars}/>
+                    </div>
+                </div>
+                <div className="row">
+                    <div className="col-md-6">
+                         <FlagTable variables={this.state.flag_vars}/>
+                    </div>
+                    <div className="col-md-6">
+                        <MedianBarChart variables={this.state.flag_vars}/>
+                    </div>
+                </div>
+            </div>
         </div>
         </div>
       );
@@ -101,7 +118,7 @@ var MedianBarChart = React.createClass({
 
       console.log(this.state.chartData)
     return (
-      <div className="col-xs-12 col-md-4">
+      <div>
         <BarChart data={this.state.chartData} redraw width="350" height="300"/>
         <Select name="flag-median-select" value={this.state.currentSelect} options={options} onChange={this.loadChartDataSingle}/>
       </div>
@@ -144,7 +161,7 @@ var MinLineChart = React.createClass({
     });
 
     return (
-      <div className="col-xs-12 col-md-4">
+      <div>
         <LineChart data={this.state.chartData} redraw width="350" height="300"/>
         <Select name="variable-select" value={this.state.currentSelect} options={options} onChange={this.loadChartData}/>
       </div>
@@ -187,12 +204,53 @@ var FlagTable = React.createClass({
     });
 
     return (
-      <div className="col-xs-12 col-md-4">
+      <div>
         <Table dataDict={this.state.tableData}/>
         <Select name="variable-select" value={this.state.currentSelect} options={options} onChange={this.loadTableData}/>
       </div>
     );
   }
+});
+
+var GoalSummary = React.createClass({
+    getInitialState: function() {
+        return {data: [], currentSelect: []};
+    },
+
+    componentDidMount: function() {
+        var dataColumn = "min_study"; 
+        var currentSelect = {value: dataColumn, label: dataColumn}
+        this.loadData(currentSelect);
+    },
+
+    loadData: function(currentSelect) {
+        $.ajax({
+            url: "/get_line_chart_data/",
+            type: 'POST',
+            data: JSON.stringify({'dataColumn': currentSelect.value}),
+            contentType: 'application/json;charset=UTF-8',
+            dataType: 'json',
+            cache: false,
+            success: function(data) {
+                this.setState({data: data, currentSelect: currentSelect});
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.error("/get_line_chart_data/", status, err.toString());
+            }.bind(this)
+        });
+    },
+
+    render: function() {
+        var options = this.props.variables.map( function(variable) {
+          return {value: variable, label: variable};
+        });
+        return (
+            <div>
+            <h2>Goal Summary</h2>
+            <Select name="goal-select" value={this.state.currentSelect} options={options} onChange={this.loadData}/>
+            </div>
+        );
+    }
 });
 
 var Table = React.createClass({
@@ -210,7 +268,7 @@ var Table = React.createClass({
       </div>
     );
   }
-})
+});
 
 
 ReactDOM.render(

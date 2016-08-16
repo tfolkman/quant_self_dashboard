@@ -26442,20 +26442,51 @@ var Dashboard = React.createClass({
     },
 
     render: function () {
+        var allVars = this.state.min_vars.concat(this.state.flag_vars);
         return React.createElement(
             'div',
             null,
             React.createElement(
                 'div',
                 { className: 'row' },
-                React.createElement(MinLineChart, { variables: this.state.min_vars }),
-                React.createElement(MedianBarChart, { variables: this.state.min_vars })
-            ),
-            React.createElement(
-                'div',
-                { className: 'row' },
-                React.createElement(FlagTable, { variables: this.state.flag_vars }),
-                React.createElement(MedianBarChart, { variables: this.state.flag_vars })
+                React.createElement(
+                    'div',
+                    { className: 'col-md-4' },
+                    React.createElement(GoalSummary, { variables: allVars }),
+                    React.createElement('br', null)
+                ),
+                React.createElement(
+                    'div',
+                    { className: 'col-md-8' },
+                    React.createElement(
+                        'div',
+                        { className: 'row' },
+                        React.createElement(
+                            'div',
+                            { className: 'col-md-6' },
+                            React.createElement(MinLineChart, { variables: this.state.min_vars })
+                        ),
+                        React.createElement(
+                            'div',
+                            { className: 'col-md-6' },
+                            React.createElement(MedianBarChart, { variables: this.state.min_vars })
+                        )
+                    ),
+                    React.createElement(
+                        'div',
+                        { className: 'row' },
+                        React.createElement(
+                            'div',
+                            { className: 'col-md-6' },
+                            React.createElement(FlagTable, { variables: this.state.flag_vars })
+                        ),
+                        React.createElement(
+                            'div',
+                            { className: 'col-md-6' },
+                            React.createElement(MedianBarChart, { variables: this.state.flag_vars })
+                        )
+                    )
+                )
             )
         );
     }
@@ -26518,7 +26549,7 @@ var MedianBarChart = React.createClass({
         console.log(this.state.chartData);
         return React.createElement(
             'div',
-            { className: 'col-xs-12 col-md-4' },
+            null,
             React.createElement(BarChart, { data: this.state.chartData, redraw: true, width: '350', height: '300' }),
             React.createElement(Select, { name: 'flag-median-select', value: this.state.currentSelect, options: options, onChange: this.loadChartDataSingle })
         );
@@ -26563,7 +26594,7 @@ var MinLineChart = React.createClass({
 
         return React.createElement(
             'div',
-            { className: 'col-xs-12 col-md-4' },
+            null,
             React.createElement(LineChart, { data: this.state.chartData, redraw: true, width: '350', height: '300' }),
             React.createElement(Select, { name: 'variable-select', value: this.state.currentSelect, options: options, onChange: this.loadChartData })
         );
@@ -26608,9 +26639,56 @@ var FlagTable = React.createClass({
 
         return React.createElement(
             'div',
-            { className: 'col-xs-12 col-md-4' },
+            null,
             React.createElement(Table, { dataDict: this.state.tableData }),
             React.createElement(Select, { name: 'variable-select', value: this.state.currentSelect, options: options, onChange: this.loadTableData })
+        );
+    }
+});
+
+var GoalSummary = React.createClass({
+    displayName: 'GoalSummary',
+
+    getInitialState: function () {
+        return { data: [], currentSelect: [] };
+    },
+
+    componentDidMount: function () {
+        var dataColumn = "min_study";
+        var currentSelect = { value: dataColumn, label: dataColumn };
+        this.loadData(currentSelect);
+    },
+
+    loadData: function (currentSelect) {
+        $.ajax({
+            url: "/get_line_chart_data/",
+            type: 'POST',
+            data: JSON.stringify({ 'dataColumn': currentSelect.value }),
+            contentType: 'application/json;charset=UTF-8',
+            dataType: 'json',
+            cache: false,
+            success: function (data) {
+                this.setState({ data: data, currentSelect: currentSelect });
+            }.bind(this),
+            error: function (xhr, status, err) {
+                console.error("/get_line_chart_data/", status, err.toString());
+            }.bind(this)
+        });
+    },
+
+    render: function () {
+        var options = this.props.variables.map(function (variable) {
+            return { value: variable, label: variable };
+        });
+        return React.createElement(
+            'div',
+            null,
+            React.createElement(
+                'h2',
+                null,
+                'Goal Summary'
+            ),
+            React.createElement(Select, { name: 'goal-select', value: this.state.currentSelect, options: options, onChange: this.loadData })
         );
     }
 });
