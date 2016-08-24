@@ -214,7 +214,7 @@ var FlagTable = React.createClass({
 
 var GoalSummary = React.createClass({
     getInitialState: function() {
-        return {data: [], currentSelect: []};
+        return {graphData: [], currentSelect: [], remaining: ''};
     },
 
     componentDidMount: function() {
@@ -225,17 +225,18 @@ var GoalSummary = React.createClass({
 
     loadData: function(currentSelect) {
         $.ajax({
-            url: "/get_line_chart_data/",
+            url: "/get_goal_data/",
             type: 'POST',
             data: JSON.stringify({'dataColumn': currentSelect.value}),
             contentType: 'application/json;charset=UTF-8',
             dataType: 'json',
             cache: false,
             success: function(data) {
-                this.setState({data: data, currentSelect: currentSelect});
+                this.setState({graphData: data.graph, currentSelect: currentSelect,
+                    remaining: data.remaining});
             }.bind(this),
             error: function(xhr, status, err) {
-                console.error("/get_line_chart_data/", status, err.toString());
+                console.error("/get_goal_data/", status, err.toString());
             }.bind(this)
         });
     },
@@ -247,7 +248,9 @@ var GoalSummary = React.createClass({
         return (
             <div>
             <h2>Goal Summary</h2>
+            <p>{this.state.remaining}</p>
             <Select name="goal-select" value={this.state.currentSelect} options={options} onChange={this.loadData}/>
+            <LineChart data={this.state.graphData} redraw width="350" height="300"/>
             </div>
         );
     }

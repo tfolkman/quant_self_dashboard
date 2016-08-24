@@ -4,6 +4,7 @@ from json import dumps, load
 import numpy as np
 import datetime
 import os
+from copy import deepcopy
 
 app = Flask(__name__)
 
@@ -59,18 +60,58 @@ def get_line_chart_data():
 @app.route('/get_goal_data/', methods=['POST'])
 def get_goal_data():
 	data_column = request.json['dataColumn']
-	interval = request.json['interval']
+	interval = goal_dict[data_column]['interval']
 	interval_df = df[data_column].resample(interval, how='sum')
 	max_value = min(12, interval_df.shape[0])
 	datasets_dict = BASE_CHART_OPTIONS
 	datasets_dict['data'] = interval_df.values[-max_value:].tolist()
+	datasets_dict2 = deepcopy(BASE_CHART_OPTIONS)
+	get_min_max_line(datasets_dict2, goal_dict[data_column]['type'],
+		goal_dict[data_column]['value'], max_value)
 	dates = [x.strftime('%Y-%m-%d') for x in interval_df.index.date]
 	dates = dates[-max_value:]
-	return_dict = {
+	graph_dict = {
 		'labels': dates,
-		'datasets': [ datasets_dict ]
+		'datasets': [ datasets_dict, datasets_dict2 ]
+	}
+	return_dict = {
+		'graph': graph_dict,
+		'remaining': get_remaining(datasets_dict['data'][-1],
+			goal_dict[data_column]['value'], goal_dict[data_column]['type'])
 	}
 	return dumps(return_dict)
+
+
+def get_remaining(current, goal, type):
+	if type.lower() == 'min':
+		return get_remaining_min(current, goal)
+	else:
+		return get_remaining_max(current, goal)
+
+
+def get_remaining_min(current, goal):
+	if current >= goal:
+		return "You've reached your goal for this period!"
+	else:
+		return "You have {0} more to reach goal".format(int(goal)-current)
+
+
+def get_remaining_max(current, goal):
+	if current >= goal:
+		return "You've already broken your goal for this period!"
+	else:
+		return "Don't do more than {0} more to reach goal".format(int(goal)-current)
+
+
+def get_min_max_line(datasets_dict, type, value, n):
+	datasets_dict['data'] = [value] * n
+	datasets_dict['fillColor'] = "rgba(220,220,220,0)"
+	datasets_dict['pointColor'] = "rgba(220,220,220,0)"
+	datasets_dict['pointStrokeColor'] = "rgba(220,220,220,0)"
+	if type.lower() == 'min':
+		datasets_dict['strokeColor'] = "rgba(0,100,0,1)"
+	elif type.lower() == 'max':
+		datasets_dict['strokeColor'] = "rgba(100,0,0,1)"
 
 
 @app.route('/get_table_data/', methods=['POST'])
@@ -96,11 +137,8 @@ def get_table_data():
 
 @app.route('/get_medians/', methods=['POST'])
 def get_medians():
-	print("*********")
 	data_columns = request.json['dataColumns']
 	time_range = request.json['timeRange']
-	print(time_range)
-	print(data_columns)
 	if 'week' in time_range:
 		group_by = "W"
 	else:
@@ -113,7 +151,6 @@ def get_medians():
 		'labels': medians.index.tolist(),
 		'datasets': [ datasets_dict ]
 	}
-	print(return_dict)
 	return dumps(return_dict)
 
 
