@@ -214,7 +214,8 @@ var FlagTable = React.createClass({
 
 var GoalSummary = React.createClass({
     getInitialState: function() {
-        return {graphData: [], currentSelect: [], remaining: ''};
+        return {graphData: [], currentSelect: [], remaining: '', daysLeft: '',
+                arrow: ''};
     },
 
     componentDidMount: function() {
@@ -233,7 +234,7 @@ var GoalSummary = React.createClass({
             cache: false,
             success: function(data) {
                 this.setState({graphData: data.graph, currentSelect: currentSelect,
-                    remaining: data.remaining});
+                    remaining: data.remaining, daysLeft: data.days_left, arrow: data.arrow});
             }.bind(this),
             error: function(xhr, status, err) {
                 console.error("/get_goal_data/", status, err.toString());
@@ -248,8 +249,11 @@ var GoalSummary = React.createClass({
         return (
             <div>
             <h2>Goal Summary</h2>
-            <p>{this.state.remaining}</p>
             <Select name="goal-select" value={this.state.currentSelect} options={options} onChange={this.loadData}/>
+            <hr></hr>
+            <p>{this.state.remaining}</p>
+            <p>Days remaining to reach goal: {this.state.daysLeft}</p>
+            <p>Current trend: <i className={this.state.arrow} ></i></p>
             <LineChart data={this.state.graphData} redraw width="350" height="300"/>
             </div>
         );

@@ -77,9 +77,30 @@ def get_goal_data():
 	return_dict = {
 		'graph': graph_dict,
 		'remaining': get_remaining(datasets_dict['data'][-1],
-			goal_dict[data_column]['value'], goal_dict[data_column]['type'])
+			goal_dict[data_column]['value'], goal_dict[data_column]['type']),
+		'days_left': days_left(goal_dict[data_column]['interval']),
+		'arrow': get_arrow(goal_dict[data_column]['type'],
+			datasets_dict['data'][-2] - datasets_dict['data'][-3])
 	}
 	return dumps(return_dict)
+
+
+def days_left(type):
+	print(type)
+	today = datetime.date.today()
+	if type.lower() == 'w':
+		return datetime.timedelta( (7-today.weekday()) % 7 ).days
+
+
+def get_arrow(type, change):
+	if change > 0 and type.lower() == 'min':
+		return "fa fa-arrow-up fa-2x green-arrow"
+	elif change > 0 and type.lower() == 'max':
+		return "fa fa-arrow-up fa-2x red-arrow"
+	elif change <= 0 and type.lower() == 'max':
+		return "fa fa-arrow-down fa-2x green-arrow"
+	elif change <= 0 and type.lower() == 'min':
+		return "fa fa-arrow-down fa-2x red-arrow"
 
 
 def get_remaining(current, goal, type):

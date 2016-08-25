@@ -1,8 +1,8 @@
 ## TODO
 
 Goal Analysis:
-3. Arrow with trend (previous_2 to previous_1)
-4. How much left to go for current
+4. Average and variance
+5. Goal list only pull defined goals
 
 
 Make file location an input

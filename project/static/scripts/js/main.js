@@ -26650,7 +26650,8 @@ var GoalSummary = React.createClass({
     displayName: 'GoalSummary',
 
     getInitialState: function () {
-        return { graphData: [], currentSelect: [], remaining: '' };
+        return { graphData: [], currentSelect: [], remaining: '', daysLeft: '',
+            arrow: '' };
     },
 
     componentDidMount: function () {
@@ -26669,7 +26670,7 @@ var GoalSummary = React.createClass({
             cache: false,
             success: function (data) {
                 this.setState({ graphData: data.graph, currentSelect: currentSelect,
-                    remaining: data.remaining });
+                    remaining: data.remaining, daysLeft: data.days_left, arrow: data.arrow });
             }.bind(this),
             error: function (xhr, status, err) {
                 console.error("/get_goal_data/", status, err.toString());
@@ -26689,12 +26690,25 @@ var GoalSummary = React.createClass({
                 null,
                 'Goal Summary'
             ),
+            React.createElement(Select, { name: 'goal-select', value: this.state.currentSelect, options: options, onChange: this.loadData }),
+            React.createElement('hr', null),
             React.createElement(
                 'p',
                 null,
                 this.state.remaining
             ),
-            React.createElement(Select, { name: 'goal-select', value: this.state.currentSelect, options: options, onChange: this.loadData }),
+            React.createElement(
+                'p',
+                null,
+                'Days remaining to reach goal: ',
+                this.state.daysLeft
+            ),
+            React.createElement(
+                'p',
+                null,
+                'Current trend: ',
+                React.createElement('i', { className: this.state.arrow })
+            ),
             React.createElement(LineChart, { data: this.state.graphData, redraw: true, width: '350', height: '300' })
         );
     }

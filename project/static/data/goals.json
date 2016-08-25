@@ -2,5 +2,6 @@
   "min_study": {"interval": "W", "type": "min", "value": "180"},
   "min_scriptures": {"interval": "W", "type": "min", "value": "70"},
   "min_tv": {"interval": "W", "type": "max", "value": "180"},
+  "flag_cardio": {"interval": "W", "type": "min", "value": "2"},
   "flag_s": {"interval": "W", "type": "min", "value": "2"}
 }
